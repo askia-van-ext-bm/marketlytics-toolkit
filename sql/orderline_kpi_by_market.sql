@@ -20,4 +20,4 @@ EXECUTE IMMEDIATE FORMAT("""
       AND o.MARKET IN UNNEST(%s)
   GROUP BY 1,2,3,4,5
   ORDER BY 1,2,3,4,5
-""", dataset_name, orderline_table, start_date, FORMAT("ARRAY%s", TO_JSON_STRING(markets)));
+""", dataset_name, orderline_table, FORMAT_DATE('%F', start_date), FORMAT("ARRAY%s", TO_JSON_STRING(markets)));
