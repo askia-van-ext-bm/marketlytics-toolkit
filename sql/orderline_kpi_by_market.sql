@@ -1,11 +1,8 @@
 ########## DECLARE VARIABLES
-DECLARE dataset_name STRING DEFAULT 'universe-prod-20220914.finance';
-DECLARE orderline_table STRING DEFAULT 'universe_orderlines';
-DECLARE markets ARRAY<STRING>;
-DECLARE start_date DATE;
-
-SET markets = @markets;
-SET start_date = @start_date;
+DECLARE dataset_name STRING DEFAULT @dataset_name;
+DECLARE orderline_table STRING DEFAULT @orderline_table;
+DECLARE start_date DATE DEFAULT @start_date;
+DECLARE markets ARRAY<STRING> DEFAULT @markets;
 
 EXECUTE IMMEDIATE FORMAT("""
   SELECT
@@ -19,8 +16,8 @@ EXECUTE IMMEDIATE FORMAT("""
   FROM `%s.%s` o
   WHERE 1=1
       AND o.ORDERLINE_STATE IN (1,2,3,4,5)
-      AND DATE(DATE_CREATION_ORDERLINE_LOCAL_TIME) >= start_date
-      AND o.MARKET IN UNNEST(markets)
+      AND DATE(DATE_CREATION_ORDERLINE_LOCAL_TIME) >= DATE('%s')
+      AND o.MARKET IN UNNEST(%s)
   GROUP BY 1,2,3,4,5
   ORDER BY 1,2,3,4,5
-""", dataset_name, orderline_table);
+""", dataset_name, orderline_table, start_date, FORMAT("ARRAY%s", TO_JSON_STRING(markets)));
