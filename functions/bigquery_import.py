@@ -1,45 +1,38 @@
+import pandas as pd
+from google.colab import auth
 from google.cloud import bigquery
 
-def fetch_orderline_kpi(dataset_name: str, orderline_table: str, markets: list[str], start_date: str) -> list[dict]:
-    client = bigquery.Client()
+def authenticate():
+    """Authenticate user in Google Colab."""
+    auth.authenticate_user()
+    print("Authenticated")
 
+def load_orderline_kpi(markets, start_date, dataset_name, orderline_table, project_id='data-backmarket-user', sql_path='sql/orderline_kpi_by_market.sql'):
+    """
+    Load KPI data from BigQuery using a parameterized SQL query.
+
+    Args:
+        markets (list): List of market codes (e.g., ['US', 'FR'])
+        start_date (str): Start date in 'YYYY-MM-DD' format
+        dataset_name (str): Name of the BigQuery dataset
+        orderline_table (str): Name of the table inside the dataset
+        project_id (str): GCP project ID
+        sql_path (str): Path to the SQL query file
+
+    Returns:
+        pd.DataFrame: Resulting dataframe from BigQuery
+    """
+    with open(sql_path, 'r') as file:
+        query = file.read()
+
+    client = bigquery.Client(project=project_id)
     job_config = bigquery.QueryJobConfig(
         query_parameters=[
             bigquery.ArrayQueryParameter("markets", "STRING", markets),
             bigquery.ScalarQueryParameter("start_date", "DATE", start_date),
+            bigquery.ScalarQueryParameter("dataset_name", "STRING", dataset_name),
+            bigquery.ScalarQueryParameter("orderline_table", "STRING", orderline_table)
         ]
     )
-
-    query = f"""
-    DECLARE dataset_name STRING DEFAULT '{dataset_name}';
-    DECLARE orderline_table STRING DEFAULT '{orderline_table}';
-    DECLARE markets ARRAY<STRING>;
-    DECLARE start_date DATE;
-
-    SET markets = @markets;
-    SET start_date = @start_date;
-
-    EXECUTE IMMEDIATE FORMAT(
-      '''
-      SELECT
-          o.MARKET,
-          DATE(o.DATETIME_CREATION_ORDERLINE_LOCAL_TIME) AS DATE_KPI,
-          o.CLIENT_COUNTRY, o.CLIENT_GMA_CODE, o.CLIENT_GMA_NAME,
-          SUM(o.QUANTITY) AS QUANTITY,
-          COUNT(DISTINCT o.ORDERLINE_ID) AS ORDERS,
-          SUM(o.GMV_LOCAL_CURRENCY) AS GMV_LOCAL_CURRENCY,
-          COUNT(DISTINCT o.CLIENT_ID) AS CLIENTS
-      FROM `%s.%s` o
-      WHERE 1=1
-          AND o.ORDERLINE_STATE IN (1,2,3,4,5)
-          AND DATE(DATE_CREATION_ORDERLINE_LOCAL_TIME) >= start_date
-          AND o.MARKET IN UNNEST(markets)
-      GROUP BY 1,2,3,4,5
-      ORDER BY 1,2,3,4,5
-      ''',
-      dataset_name, orderline_table
-    );
-    """
-
-    job = client.query(query, job_config=job_config)
-    return [dict(row) for row in job.result()]
+    df = client.query(query, job_config=job_config).to_dataframe()
+    return df
