@@ -21,8 +21,12 @@ To use this library in Google Colab:
 
 ### 1. Clone the repository
 
-If the repo is private, generate a GitHub personal access token and use the following command:
+If the repository is **public**:
+```python
+!git clone https://github.com/backmarket/marketlytics-toolkit.git
+```
 
+If the repo is private, generate a GitHub personal access token and use the following command:
 ```python
 !git clone https://<YOUR_TOKEN>@github.com/askia-van-ext-bm/marketlytics-toolkit.git
 ```
