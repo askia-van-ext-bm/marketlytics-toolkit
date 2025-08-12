@@ -53,6 +53,13 @@ from models.uplift_model import run_uplift_model
 %autoreload 2
 ```
 
+### 5. Pull updated code
+
+```
+%cd marketlytics-toolkit
+!git pull origin main  # ou remplace 'main' par ta branche
+```
+
 ## Contribution Guidelines
 
  - Keep functions modular and well-documented
