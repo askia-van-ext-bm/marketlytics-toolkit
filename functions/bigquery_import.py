@@ -25,7 +25,7 @@ def load_orderline_kpi(markets, start_date, dataset_name, orderline_table, proje
     with open(sql_path, 'r') as file:
         query = file.read()
 
-    client = bigquery.Client(project=project_id)
+    client = bigquery.Client(project=project_id, location='EU')
     job_config = bigquery.QueryJobConfig(
         query_parameters=[
             bigquery.ArrayQueryParameter("markets", "STRING", markets),
