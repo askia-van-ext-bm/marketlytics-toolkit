@@ -11,7 +11,7 @@ This repository aims to:
 
 ## Contents
 
-- `bigquery/`: Parameterized BQ queries for campaign performance, customer segmentation, and more
+- `sql/`: Parameterized BQ queries for campaign performance, customer segmentation, and more
 - `functions/`: Python utilities for data cleaning, feature engineering, and visualization
 - `models/`: Predefined modeling workflows for uplift modeling, etc.
 
