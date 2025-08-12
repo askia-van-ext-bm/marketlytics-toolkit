@@ -1,0 +1,26 @@
+########## DECLARE VARIABLES
+DECLARE dataset_name STRING DEFAULT 'universe-prod-20220914.finance';
+DECLARE orderline_table STRING DEFAULT 'universe_orderlines';
+DECLARE markets ARRAY<STRING>;
+DECLARE start_date DATE;
+
+SET markets = @markets;
+SET start_date = @start_date;
+
+EXECUTE IMMEDIATE FORMAT("""
+  SELECT
+      o.MARKET,
+      DATE(o.DATETIME_CREATION_ORDERLINE_LOCAL_TIME) AS DATE_KPI,
+      o.CLIENT_COUNTRY, o.CLIENT_GMA_CODE, o.CLIENT_GMA_NAME,
+      SUM(o.QUANTITY) AS QUANTITY,
+      COUNT(DISTINCT o.ORDERLINE_ID) AS ORDERS,
+      SUM(o.GMV_LOCAL_CURRENCY) AS GMV_LOCAL_CURRENCY,
+      COUNT(DISTINCT o.CLIENT_ID) AS CLIENTS
+  FROM `%s.%s` o
+  WHERE 1=1
+      AND o.ORDERLINE_STATE IN (1,2,3,4,5)
+      AND DATE(DATE_CREATION_ORDERLINE_LOCAL_TIME) >= start_date
+      AND o.MARKET IN UNNEST(markets)
+  GROUP BY 1,2,3,4,5
+  ORDER BY 1,2,3,4,5
+""", dataset_name, orderline_table);
