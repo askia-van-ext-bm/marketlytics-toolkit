@@ -1,7 +1,7 @@
 import pandas as pd
 from google.colab import auth
 
-def fetch_orderline_kpi(markets, start_date, project_id, dataset_name, orderline_table):
+def fetch_orderline_kpi_by_client_gma(markets, start_date, project_id, dataset_name, orderline_table):
     """
     Exécute une requête BigQuery pour récupérer les KPIs des orderlines par marché.
 
