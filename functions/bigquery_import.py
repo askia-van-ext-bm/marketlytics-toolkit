@@ -3,17 +3,17 @@ from google.colab import auth
 
 def fetch_orderline_kpi_by_client_gma(markets, start_date, project_id, dataset_name, orderline_table):
     """
-    Exécute une requête BigQuery pour récupérer les KPIs des orderlines par marché.
-
+    Executes a BigQuery query to retrieve orderline KPIs by client gma.
+    
     Parameters:
-    - markets (list of str): Liste des marchés à inclure (ex: ['FR', 'DE'])
-    - start_date (str): Date de début au format 'YYYY-MM-DD'
-    - project_id (str): ID du projet GCP
-    - dataset_name (str): Nom du dataset BigQuery
-    - orderline_table (str): Nom de la table des orderlines
-
+    - markets (list of str): List of markets to include (e.g., ['FR', 'DE'])
+    - start_date (str): Start date in 'YYYY-MM-DD' format
+    - project_id (str): GCP project ID
+    - dataset_name (str): Name of the BigQuery dataset
+    - orderline_table (str): Name of the orderline table
+    
     Returns:
-    - pd.DataFrame: Résultat de la requête
+    - pd.DataFrame: Query result
     """
     auth.authenticate_user()
     print("Authenticated")
@@ -44,17 +44,17 @@ def fetch_orderline_kpi_by_client_gma(markets, start_date, project_id, dataset_n
 
 def fetch_orderline_kpi_with_promocodes(markets, tokens, start_year, project_id, join_type='LEFT'):
     """
-    Récupère les KPIs des orderlines enrichis avec les codes promo.
-
+    Retrieves orderline KPIs enriched with promotional codes.
+    
     Parameters:
-    - markets (list of str): Liste des marchés (ex: ['FR'])
-    - tokens (list of str): Liste des tokens promo (ex: ['LAPTOPSUMMER'])
-    - start_year (int): Année de début (ex: 2025)
-    - project_id (str): ID du projet GCP
-    - join_type (str): 'LEFT' ou 'INNER' pour le type de jointure
-
+    - markets (list of str): List of markets (e.g., ['FR'])
+    - tokens (list of str): List of promotional tokens (e.g., ['LAPTOPSUMMER'])
+    - start_year (int): Starting year (e.g., 2025)
+    - project_id (str): GCP project ID
+    - join_type (str): 'LEFT' or 'INNER' to specify the type of join
+    
     Returns:
-    - pd.DataFrame: Résultat de la requête
+    - pd.DataFrame: Result of the query
     """
     auth.authenticate_user()
     print("Authenticated")
