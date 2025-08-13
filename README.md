@@ -60,6 +60,10 @@ from models.uplift_model import run_uplift_model
 !git pull origin main  # ou remplace 'main' par ta branche
 ```
 
+## Short demo in collab(wip):
+
+[Collab demo](https://colab.research.google.com/drive/1S_zDRa4ESYn4QHkikUr5ZL1uHHiJYZ7k?authuser=1#scrollTo=tjiakkS6ekRV)
+
 ## Contribution Guidelines
 
  - Keep functions modular and well-documented
