@@ -51,7 +51,9 @@ def fetch_orderline_kpi_with_promocodes(markets, tokens, start_year, project_id,
     - tokens (list of str): List of promotional tokens (e.g., ['LAPTOPSUMMER'])
     - start_year (int): Starting year (e.g., 2025)
     - project_id (str): GCP project ID
-    - join_type (str): 'LEFT' or 'INNER' to specify the type of join
+    - join_type (str): 'LEFT' or 'INNER' to specify the type of join. 
+                        If 'INNER' then only token based orderlines, 
+                        if 'LEFT' then all orderlines with indicators for listed tokens
     
     Returns:
     - pd.DataFrame: Result of the query
