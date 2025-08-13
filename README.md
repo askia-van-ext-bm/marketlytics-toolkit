@@ -57,7 +57,7 @@ from models.uplift_model import run_uplift_model
 
 ```
 %cd marketlytics-toolkit
-!git pull origin main  # ou remplace 'main' par ta branche
+!git pull origin main  # or replace 'main' with your working branch
 ```
 
 ## Short demo in collab(wip):
