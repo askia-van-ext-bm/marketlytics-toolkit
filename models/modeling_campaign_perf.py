@@ -6,6 +6,73 @@ import numpy as np
 from scipy import stats
 from scipy.stats import norm
 
+
+def run_uplift_analysis_pipeline(df: pd.DataFrame,
+                                  by_variable: str,
+                                  target: str,
+                                  metric: str,
+                                  start: str,
+                                  end: str,
+                                  market: list,
+                                  confidence_level: float,
+                                  validation_start: pd.Timestamp,
+                                  promo_start: pd.Timestamp,
+                                  promo_end: pd.Timestamp,
+                                  exclusion_list: list,
+                                  exclusion_period: tuple,
+                                  top_corr: int) -> pd.DataFrame:
+    """
+    Runs the full uplift analysis pipeline from data preparation to result summary.
+
+    Parameters:
+    - df (pd.DataFrame): Raw input data
+    - by_variable (str): Column used to group products (e.g., category)
+    - target (str): Target product or group to analyze
+    - metric (str): Metric to evaluate (e.g., GMV, units)
+    - start (str): Start date of analysis period
+    - end (str): End date of analysis period
+    - market (list): Market identifier (e.g., ['DE'])
+    - confidence_level (float): Confidence level for uplift interval
+    - validation_start (pd.Timestamp): Start of model validation period
+    - promo_start (pd.Timestamp): Start of promotional period
+    - promo_end (pd.Timestamp): End of promotional period
+    - exclusion_list (list): List of products to exclude from modeling
+    - exclusion_period (tuple): Optional period to exclude (not used here)
+    - top_corr (int): Number of top correlated features to use in the model
+
+    Returns:
+    - pd.DataFrame: Single-row DataFrame summarizing uplift results
+    """
+    # Step 1: Prepare daily GMV and correlations
+    daily_counts, correlations, top_features = create_graph_daily_gmv(
+        df, start, end, market, by_variable, target, metric,
+        top_corr, validation_start, promo_start, promo_end, exclusion_list
+    )
+
+    # Step 2: Pivot and reindex for modeling
+    daily_gmv_by_base_model = pivot_and_reindex_daily_counts(
+        daily_counts, by_variable, metric
+    )
+
+    # Step 3: Train regression model
+    model, top_features, mae, mape = create_linear_regression_model(
+        daily_gmv_by_base_model, validation_start, promo_start, promo_end,
+        target, top_corr
+    )
+
+    # Step 4: Predict and compute uplift
+    df_pred, diff_sum, diff_lower, diff_upper, p_value = plot_and_compute_uplift(
+        daily_gmv_by_base_model, model, top_features, confidence_level,
+        validation_start, promo_start, promo_end, target
+    )
+
+    # Step 5: Format result table
+    rslt = build_uplift_result_table(
+        market, mae, mape, diff_sum, diff_lower, diff_upper, p_value
+    )
+
+    return rslt
+
 def create_linear_regression_model(df: pd.DataFrame, validation_start: pd.Timestamp,
                                    promo_start: pd.Timestamp, promo_end: pd.Timestamp,
                                    target: str, top_corr: int = 10):
