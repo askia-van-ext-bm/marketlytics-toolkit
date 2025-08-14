@@ -7,7 +7,7 @@ from scipy import stats
 from scipy.stats import norm
 
 from functions.data_visualization import create_graph_daily_gmv
-
+from functions.data_analysis import pivot_and_reindex_daily_counts
 
 def run_uplift_analysis_pipeline(df: pd.DataFrame,
                                   by_variable: str,
