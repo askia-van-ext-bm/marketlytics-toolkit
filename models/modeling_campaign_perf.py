@@ -6,6 +6,8 @@ import numpy as np
 from scipy import stats
 from scipy.stats import norm
 
+from functions.data_visualization import create_graph_daily_gmv
+
 
 def run_uplift_analysis_pipeline(df: pd.DataFrame,
                                   by_variable: str,
