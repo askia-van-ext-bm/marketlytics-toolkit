@@ -167,3 +167,30 @@ def _compute_statistical_uplift(df_pred, residuals, promo_start, promo_end, targ
     z_score = diff_sum / (std_residuals * np.sqrt(n))
     p_value = 2 * (1 - stats.norm.cdf(abs(z_score)))
     return diff_sum, ci_margin_sum, p_value
+
+def build_uplift_result_table(market: list, mae: float, mape: float,
+                              diff_sum: float, diff_lower: float,
+                              diff_upper: float, p_value: float) -> pd.DataFrame:
+    """
+    Builds a single-row DataFrame summarizing uplift evaluation metrics.
+
+    Parameters:
+    - market (list): List containing the market name (e.g., ['FR'])
+    - mae (float): Mean Absolute Error of the model
+    - mape (float): Mean Absolute Percentage Error of the model
+    - diff_sum (float): Observed uplift (actual - predicted) during promo period
+    - diff_lower (float): Lower bound of the confidence interval
+    - diff_upper (float): Upper bound of the confidence interval
+    - p_value (float): p-value of the uplift significance test
+
+    Returns:
+    - pd.DataFrame: A single-row DataFrame with named columns
+    """
+    data = np.array([
+        market[0], mae, mape, diff_sum,
+        round(diff_lower, 2), round(diff_upper, 2), p_value
+    ]).reshape(1, 7)
+
+    columns = ['market', 'mae', 'mape', 'uplift', 'uplift_lower', 'uplift_upper', 'p_value']
+    return pd.DataFrame(data, columns=columns)
+
